@@ -4,8 +4,8 @@ import * as cheerio from "cheerio";
 export async function getInfo(req, res) {
   let html;
   try {
-    const response = await axios(process.env.URL + req.params.id);
-    html = response.data;
+    const response = await axios(process.env.URL + req.params.id, { responseType: 'arraybuffer' });
+    html = Buffer.from(response.data, 'binary').toString("latin1");  // Trás o html com a acentuação latina e sem a substituição de caracteres
   } catch (err) {
     res.json({
       err: 400,
@@ -33,7 +33,10 @@ function _dataProcessing($, tables, infos) {
       const label = $(this).text().replace(/\uFFFD/gi, "");
 
       if (label !== "?") {
-        tableData.push({ label, value: null });
+        tableData.push({
+          label: label.normalize('NFD').replace(/[\u0300-\u036f]/g, ""),
+          value: null
+        });
       }
     });
 
@@ -60,6 +63,7 @@ function _dataProcessing($, tables, infos) {
         });
 
         haveTitle = haveTitle.join("");
+        haveTitle = haveTitle.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
       })
 
       infos[haveTitle] = tableData;
