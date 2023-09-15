@@ -27,13 +27,14 @@ function _dataProcessing($, tables, infos) {
     const labels = $(this).find("tbody tr .label span");
     const values = $(this).find("tbody tr .data span");
     const title = $(this).find("tbody tr .nivel1 span");
-    const tableData = [];
+    const tableDataArr = [];
+    const tableObj = {}
 
     labels.each(function () {
       const label = $(this).text().replace(/\uFFFD/gi, "");
 
       if (label !== "?") {
-        tableData.push({
+        tableDataArr.push({
           label: label.normalize('NFD').replace(/[\u0300-\u036f]/g, ""),
           value: null
         });
@@ -44,29 +45,58 @@ function _dataProcessing($, tables, infos) {
       const value = $(this).text().replace(/\uFFFD/gi, "");
 
       if (value !== "?") {
-        tableData[i].value = value;
+        tableDataArr[i].value = value;
+      }
+    });
+    
+    let haveTitle;
+    title.each(function () {
+      let strTemp = $(this).text().replace(/\uFFFD/gi, "").split(" ");
+      strTemp = strTemp.map(str => {
+        const firtChar = str.charAt(0).toUpperCase();
+
+        return firtChar + str.slice(1);
+      });
+
+      strTemp = strTemp.join("");
+
+      if (haveTitle === undefined) {
+        haveTitle = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+      } else if (Array.isArray(haveTitle)) {
+        strTemp = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+        haveTitle.push(strTemp);
+      } else {
+        strTemp = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+        haveTitle = [haveTitle, strTemp = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "")]
       }
     });
 
-    if (i === 0) {
-      infos["ResumenData"] = tableData;
-    } else if (i === 1) {
-      infos["ResumenData"] = [...infos["ResumenData"], ...tableData];
+    for (const data of tableDataArr) {
+      if (!data.label) {
+        data.label = "emptyLabel";
+      }
+
+      tableObj[data.label] = data.value;
+    }
+
+    for (const data of tableDataArr) {
+      tableObj[data.label] = data.value;
+    }
+
+    if (haveTitle === undefined) {
+      infos["ResumenData"] = { ...infos["ResumenData"], ...tableObj };
+      
+      delete infos["ResumenData"]["emptyLabel"]
+    } else if (Array.isArray(haveTitle)) { 
+      infos[haveTitle.join("_")] = tableObj;
+
+      delete infos[haveTitle.join("_")]["emptyLabel"];
     } else {
-      let haveTitle;
-      title.each(function () {
-        haveTitle = $(this).text().replace(/\uFFFD/gi, "").split(" ");
-        haveTitle = haveTitle.map(str => {
-          const firtChar = str.charAt(0).toUpperCase();
+      infos[haveTitle] = tableObj;
 
-          return firtChar + str.slice(1);
-        });
-
-        haveTitle = haveTitle.join("");
-        haveTitle = haveTitle.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-      })
-
-      infos[haveTitle] = tableData;
+      delete infos[haveTitle]["emptyLabel"];
     }
   });
 }
