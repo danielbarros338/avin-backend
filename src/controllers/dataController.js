@@ -66,15 +66,15 @@ function _dataProcessing($, tables, infos) {
       strTemp = strTemp.join("");
 
       if (haveTitle === undefined) {
-        haveTitle = strTemp.replace(/[^\w\s]/gi, '');
+        haveTitle = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
       } else if (Array.isArray(haveTitle)) {
-        strTemp = strTemp.replace(/[^\w\s]/gi, '');;
+        strTemp = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 
         haveTitle.push(strTemp);
       } else {
-        strTemp = strTemp.replace(/[^\w\s]/gi, '');
+        strTemp = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 
-        haveTitle = [haveTitle, strTemp = strTemp.replace(/[^\w\s]/gi, '')]
+        haveTitle = [haveTitle, strTemp = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "")]
       }
     });
 

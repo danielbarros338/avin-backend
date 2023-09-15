@@ -4,7 +4,7 @@ import sequelize from "../config/db";
 class Stocks extends Model { };
 
 Stocks.init({
-  stockId: {
+  id: {
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true,
@@ -14,7 +14,7 @@ Stocks.init({
     type: DataTypes.STRING,
     allowNull: false,
   },
-  name: {
+  company: {
     type: DataTypes.STRING,
     allowNull: false,
   },
