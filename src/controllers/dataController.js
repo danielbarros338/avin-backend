@@ -34,8 +34,13 @@ function _dataProcessing($, tables, infos) {
       const label = $(this).text().replace(/\uFFFD/gi, "");
 
       if (label !== "?") {
+        let formatedLabel = label.replace(/[^\w\s]/gi, '');
+        formatedLabel = formatedLabel.trim().split(" ");
+        formatedLabel = formatedLabel.map(str => str.charAt(0).toUpperCase() + str.substring(1));
+        formatedLabel = formatedLabel.join("");
+
         tableDataArr.push({
-          label: label.normalize('NFD').replace(/[\u0300-\u036f]/g, ""),
+          label: formatedLabel,
           value: null
         });
       }
@@ -61,15 +66,15 @@ function _dataProcessing($, tables, infos) {
       strTemp = strTemp.join("");
 
       if (haveTitle === undefined) {
-        haveTitle = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+        haveTitle = strTemp.replace(/[^\w\s]/gi, '');
       } else if (Array.isArray(haveTitle)) {
-        strTemp = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+        strTemp = strTemp.replace(/[^\w\s]/gi, '');;
 
         haveTitle.push(strTemp);
       } else {
-        strTemp = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+        strTemp = strTemp.replace(/[^\w\s]/gi, '');
 
-        haveTitle = [haveTitle, strTemp = strTemp.normalize('NFD').replace(/[\u0300-\u036f]/g, "")]
+        haveTitle = [haveTitle, strTemp = strTemp.replace(/[^\w\s]/gi, '')]
       }
     });
 
