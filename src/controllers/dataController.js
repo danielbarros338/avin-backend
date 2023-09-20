@@ -137,8 +137,11 @@ async function _saveData(infos, res) {
     const basicInfoParams = _basicInfoFormater(infos);;
 
     await Models.BasicInfo.create({
-      ...basicInfoParams
+      ...basicInfoParams,
+      companyId: stock.id
     });
+
+
   } catch (err) {
     // res.json({
     //   err: 400,
@@ -175,6 +178,6 @@ function _basicInfoFormater(infos) {
     lastBalance,
     type: infos.ResumenData.Tipo,
     sector: infos.ResumenData.Setor,
-    Subsector: infos.ResumenData.Subsetor
+    subsector: infos.ResumenData.Subsetor
   }
 }
