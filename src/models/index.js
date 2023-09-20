@@ -26,7 +26,7 @@ FundamentalData.belongsTo(Stocks, {
 });
 
 // Stocks.sync();
-// BasicInfo.sync();
+// BasicInfo.sync({ force: true });
 // Oscillations.sync();
 // SheetBalance.sync();
 // IncomeStatementData.sync();

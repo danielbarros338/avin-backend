@@ -134,28 +134,47 @@ async function _saveData(infos, res) {
       company: infos.ResumenData.Empresa
     });
 
-    const basicInfoParams = {
-      price: parseFloat(infos.ResumenData.Cotao.replace(",", ".")),
-      type: infos.ResumenData.Tipo,
-      lastQuoteDate: infos.ResumenData.DataLtCot,
-      lowestQuoteTwelveMonths: parseFloat(infos.ResumenData.Min52Sem.replace(",", ".")),
-      sector: infos.ResumenData.Setor,
-      higherQuoteTwelveMonths: parseFloat(infos.ResumenData.Max52Sem.replace(",", ".")),
-      Subsector: infos.ResumenData.Subsetor,
-      averangeTradingVolumeTwoMonths: parseFloat(infos.ResumenData.VolMd2m.replaceAll(".", "").replace(",",".")),
-      marketValue: parseFloat(infos.ResumenData.ValorDeMercado.replaceAll(".","").replace(",",".")),
-      lastBalance: infos.ResumenData.LtBalanoProcessado,
-      firmValue: parseFloat(infos.ResumenData.ValorDaFirma.replaceAll(".","").replace(",",".")),
-      numberOfActions: parseInt(infos.ResumenData.NroAes.replaceAll(".","")),
-      companyId: stock.id
-    };
+    const basicInfoParams = _basicInfoFormater(infos);;
 
-    await Models.BasicInfo.create(basicInfoParams);
+    await Models.BasicInfo.create({
+      ...basicInfoParams
+    });
   } catch (err) {
     // res.json({
     //   err: 400,
     //   message: "Erro ao salvar os dados no banco de dados"
     // });
     throw new Error("Erro ao salvar os dados no banco de dados: ", err);
+  }
+}
+
+function _basicInfoFormater(infos) {
+  const numbers = {
+    price: parseFloat(infos.ResumenData.Cotao.replace(",", ".")),
+    lowestQuoteTwelveMonths: parseFloat(infos.ResumenData.Min52Sem.replace(",", ".")),
+    higherQuoteTwelveMonths: parseFloat(infos.ResumenData.Max52Sem.replace(",", ".")),
+    averangeTradingVolumeTwoMonths: parseFloat(infos.ResumenData.VolMd2m.replaceAll(".", "").replace(",",".")),
+    marketValue: parseFloat(infos.ResumenData.ValorDeMercado.replaceAll(".", "").replace(",", ".")),
+    firmValue: parseFloat(infos.ResumenData.ValorDaFirma.replaceAll(".","").replace(",",".")),
+    numberOfActions: parseInt(infos.ResumenData.NroAes.replaceAll(".","")),
+  }
+
+  const keys = Object.keys(numbers);
+
+  for (const key of keys) {
+    if (isNaN(numbers[key]))
+      numbers[key] = null;
+  }
+
+  const lastQuoteDate = infos.ResumenData.DataLtCot.split("/").reverse().join("-");
+  const lastBalance = infos.ResumenData.LtBalanoProcessado.split("/").reverse().join("-");
+
+  return {
+    ...numbers,
+    lastQuoteDate,
+    lastBalance,
+    type: infos.ResumenData.Tipo,
+    sector: infos.ResumenData.Setor,
+    Subsector: infos.ResumenData.Subsetor
   }
 }

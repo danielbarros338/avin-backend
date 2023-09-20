@@ -11,7 +11,7 @@ BasicInfo.init({
     autoIncrement: true
   },
   price: {
-    type: DataTypes.STRING,
+    type: DataTypes.DOUBLE,
   },
   type: {
     type: DataTypes.CHAR(5)
@@ -20,7 +20,7 @@ BasicInfo.init({
     type: DataTypes.DATE
   },
   lowestQuoteTwelveMonths: {
-    type: DataTypes.DATE
+    type: DataTypes.DOUBLE
   },
   sector: {
     type: DataTypes.STRING
@@ -28,7 +28,7 @@ BasicInfo.init({
   higherQuoteTwelveMonths: {
     type: DataTypes.DOUBLE
   },
-  Subsector: {
+  subsector: {
     type: DataTypes.STRING
   },
   averangeTradingVolumeTwoMonths: {
@@ -38,13 +38,13 @@ BasicInfo.init({
     type: DataTypes.DOUBLE
   },
   lastBalance: {
-    type: DataTypes.DOUBLE
+    type: DataTypes.DATE
   },
   firmValue: {
     type: DataTypes.DOUBLE
   },
   numberOfActions: {
-    type: DataTypes.INTEGER
+    type: DataTypes.BIGINT
   },
 }, {
   sequelize,
