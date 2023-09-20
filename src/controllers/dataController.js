@@ -1,7 +1,10 @@
 import axios from "axios";
+import * as Models from "../models/index.js";
 import * as cheerio from "cheerio";
 
 export async function getInfo(req, res) {
+  const haveSavedData = await _verifyData(req, res);
+
   let html;
   try {
     const response = await axios(process.env.URL + req.params.id, { responseType: 'arraybuffer' });
@@ -18,6 +21,7 @@ export async function getInfo(req, res) {
   const infos = {}
 
   _dataProcessing($, tables, infos);
+  await _saveData(infos, res);
 
   res.json({ infos });
 }
@@ -104,4 +108,54 @@ function _dataProcessing($, tables, infos) {
       delete infos[haveTitle]["emptyLabel"];
     }
   });
+}
+
+async function _verifyData(req, res) {
+  let dbData;
+  try {
+    dbData = await Models.Stocks.findAll({ where: { code: req.params.id } });
+  } catch (err) {
+    // res.json({
+    //   err: 400,
+    //   message: "Erro ao buscar os dados no banco de dados"
+    // });
+    throw new Error("Erro ao buscar os dados no banco de dados: ", err.message);
+  }
+
+  if (!dbData) return false;
+
+  return true;
+}
+
+async function _saveData(infos, res) {
+  try {
+    const stock = await Models.Stocks.create({
+      code: infos.ResumenData.Papel,
+      company: infos.ResumenData.Empresa
+    });
+
+    const basicInfoParams = {
+      price: parseFloat(infos.ResumenData.Cotao.replace(",", ".")),
+      type: infos.ResumenData.Tipo,
+      lastQuoteDate: infos.ResumenData.DataLtCot,
+      lowestQuoteTwelveMonths: parseFloat(infos.ResumenData.Min52Sem.replace(",", ".")),
+      sector: infos.ResumenData.Setor,
+      higherQuoteTwelveMonths: parseFloat(infos.ResumenData.Max52Sem.replace(",", ".")),
+      Subsector: infos.ResumenData.Subsetor,
+      averangeTradingVolumeTwoMonths: parseFloat(infos.ResumenData.VolMd2m.replaceAll(".", "").replace(",",".")),
+      marketValue: parseFloat(infos.ResumenData.ValorDeMercado.replaceAll(".","").replace(",",".")),
+      lastBalance: infos.ResumenData.LtBalanoProcessado,
+      firmValue: parseFloat(infos.ResumenData.ValorDaFirma.replaceAll(".","").replace(",",".")),
+      numberOfActions: parseInt(infos.ResumenData.NroAes.replaceAll(".","")),
+      companyId: stock.id
+    };
+
+    await Models.BasicInfo.create(basicInfoParams);
+  } catch (err) {
+    // res.json({
+    //   err: 400,
+    //   message: "Erro ao salvar os dados no banco de dados"
+    // });
+    throw new Error("Erro ao salvar os dados no banco de dados: ", err);
+  }
 }

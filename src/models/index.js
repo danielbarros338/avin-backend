@@ -1,9 +1,9 @@
-import Stocks from "./Stocks";
-import BasicInfo from "./BasicInfos";
-import Oscillations from "./Oscillations";
-import SheetBalance from "./SheetBalance";
-import IncomeStatementData from "./IncomeStatementData";
-import FundamentalData from "./FundamentalData";
+import Stocks from "./Stocks.js";
+import BasicInfo from "./BasicInfos.js";
+import Oscillations from "./Oscillations.js";
+import SheetBalance from "./SheetBalance.js";
+import IncomeStatementData from "./IncomeStatementData.js";
+import FundamentalData from "./FundamentalData.js";
 
 BasicInfo.belongsTo(Stocks, {
   foreignKey: "companyId"
@@ -25,4 +25,11 @@ FundamentalData.belongsTo(Stocks, {
   foreignKey: "companyId"
 });
 
-export default { Stocks, BasicInfo };
+// Stocks.sync();
+// BasicInfo.sync();
+// Oscillations.sync();
+// SheetBalance.sync();
+// IncomeStatementData.sync();
+// FundamentalData.sync();
+
+export { Stocks, BasicInfo, Oscillations, SheetBalance, IncomeStatementData, FundamentalData };
