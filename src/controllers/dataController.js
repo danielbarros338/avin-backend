@@ -3,7 +3,16 @@ import * as Models from "../models/index.js";
 import * as cheerio from "cheerio";
 
 export async function getInfo(req, res) {
-  const haveSavedData = await _verifyData(req, res);
+  const haveSavedData = await _verifyData(req);
+
+  if (haveSavedData.status === 200) {
+    res
+      .status(haveSavedData.status)
+      .json(haveSavedData.message)
+      .end();
+    
+    return;
+  }
 
   let html;
   try {
@@ -21,7 +30,7 @@ export async function getInfo(req, res) {
   const infos = {}
 
   _dataProcessing($, tables, infos);
-  await _saveData(infos, res);
+  const saveStatus = await _saveData(infos);
 
   res.json({ infos });
 }
@@ -110,44 +119,94 @@ function _dataProcessing($, tables, infos) {
   });
 }
 
-async function _verifyData(req, res) {
+async function _verifyData(req) {
   let dbData;
   try {
     dbData = await Models.Stocks.findAll({ where: { code: req.params.id } });
   } catch (err) {
-    // res.json({
-    //   err: 400,
-    //   message: "Erro ao buscar os dados no banco de dados"
-    // });
-    throw new Error("Erro ao buscar os dados no banco de dados: ", err.message);
+    return {
+      status: 400,
+      message: `ERR: SEARCH A STOCK ON DATABASE: ${err.message}`
+    };
   }
 
-  if (!dbData) return false;
+  if (!dbData || dbData.length === 0)
+    return {
+      status: 404,
+      message: 'DATA NOT FOUND'
+    };
 
-  return true;
+  let haveTodayData;
+  if (dbData.length > 1) {
+    const today = new Date();
+
+    for (const data of dbData) {
+      const stockData = new Date(data.createdAt);
+      
+      if (stockData.toLocaleDateString() === today.toLocaleDateString()) {
+        haveTodayData = stockData;
+        break;
+      }
+    }
+  }
+
+  if (!haveTodayData) 
+    return {
+      status: 204,
+      message: "NO DATA TODAY"
+    };
+  
+  return {
+    status: 200,
+    message: haveTodayData
+  };
 }
 
-async function _saveData(infos, res) {
+async function _saveData(infos) {
+  let stock;
   try {
-    const stock = await Models.Stocks.create({
+    stock = await Models.Stocks.create({
       code: infos.ResumenData.Papel,
-      company: infos.ResumenData.Empresa
+      company: infos.ResumenData.Empresaa
     });
+  } catch (err) {
+    return {
+      err: 400,
+      message: `ERR: SAVE STOCK ON DATABASE - ${err.message}`
+    }
+  }
 
+  try {
     const basicInfoParams = _basicInfoFormater(infos);;
 
     await Models.BasicInfo.create({
       ...basicInfoParams,
       companyId: stock.id
     });
-
-
   } catch (err) {
-    // res.json({
-    //   err: 400,
-    //   message: "Erro ao salvar os dados no banco de dados"
-    // });
-    throw new Error("Erro ao salvar os dados no banco de dados: ", err);
+    return {
+      err: 400,
+      message: `ERR: SAVE BASIC INFORMATION ON DATABASE - ${err.message}`
+    }
+  }
+
+  try {
+    const oscillationParams = _oscillationFormater(infos);
+
+    await Models.Oscillations.create({
+      ...oscillationParams,
+      companyId: stock.id
+    })
+  } catch (err) {
+    return {
+      err: 400,
+      message: `ERR: SAVE OSCILLATION ON DATABASE - ${err.message}`
+    }
+  }
+
+  return {
+    status: 200,
+    message: { stockId: stock.id }
   }
 }
 
@@ -179,5 +238,19 @@ function _basicInfoFormater(infos) {
     type: infos.ResumenData.Tipo,
     sector: infos.ResumenData.Setor,
     subsector: infos.ResumenData.Subsetor
+  }
+}
+
+function _oscillationFormater(infos) {
+  return {
+    "2018": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2018"]),
+    "2019": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2019"]),
+    "2020": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2020"]),
+    "2021": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2021"]),
+    "2022": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2022"]),
+    "2023": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2023"]),
+    today: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas.Dia),
+    mounth: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas.Ms),
+    thirtyDays: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["30Dias"])
   }
 }
