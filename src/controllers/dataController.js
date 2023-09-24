@@ -1,9 +1,12 @@
 import axios from "axios";
-import * as Models from "../models/index.js";
 import * as cheerio from "cheerio";
+import * as Models from "../models/index.js";
+import * as formater from "../utils/formaters.js";
 
 export async function getInfo(req, res) {
   const haveSavedData = await _verifyData(req);
+
+  //TO DO: Logica para retornar os dados completos se existir dados salvos hoje
 
   if (haveSavedData.status === 200) {
     res
@@ -21,7 +24,7 @@ export async function getInfo(req, res) {
   } catch (err) {
     res.json({
       err: 400,
-      message: "Erro ao buscar os dados"
+      message: `ERR: SEARCH DATA - ${err.message}`
     });
   }
 
@@ -177,7 +180,7 @@ async function _saveData(infos) {
   }
 
   try {
-    const basicInfoParams = _basicInfoFormater(infos);;
+    const basicInfoParams = formater.basicInfoFormater(infos);;
 
     await Models.BasicInfo.create({
       ...basicInfoParams,
@@ -191,7 +194,7 @@ async function _saveData(infos) {
   }
 
   try {
-    const oscillationParams = _oscillationFormater(infos);
+    const oscillationParams = formater.oscillationFormater(infos);
 
     await Models.Oscillations.create({
       ...oscillationParams,
@@ -207,50 +210,5 @@ async function _saveData(infos) {
   return {
     status: 200,
     message: { stockId: stock.id }
-  }
-}
-
-function _basicInfoFormater(infos) {
-  const numbers = {
-    price: parseFloat(infos.ResumenData.Cotao.replace(",", ".")),
-    lowestQuoteTwelveMonths: parseFloat(infos.ResumenData.Min52Sem.replace(",", ".")),
-    higherQuoteTwelveMonths: parseFloat(infos.ResumenData.Max52Sem.replace(",", ".")),
-    averangeTradingVolumeTwoMonths: parseFloat(infos.ResumenData.VolMd2m.replaceAll(".", "").replace(",",".")),
-    marketValue: parseFloat(infos.ResumenData.ValorDeMercado.replaceAll(".", "").replace(",", ".")),
-    firmValue: parseFloat(infos.ResumenData.ValorDaFirma.replaceAll(".","").replace(",",".")),
-    numberOfActions: parseInt(infos.ResumenData.NroAes.replaceAll(".","")),
-  }
-
-  const keys = Object.keys(numbers);
-
-  for (const key of keys) {
-    if (isNaN(numbers[key]))
-      numbers[key] = null;
-  }
-
-  const lastQuoteDate = infos.ResumenData.DataLtCot.split("/").reverse().join("-");
-  const lastBalance = infos.ResumenData.LtBalanoProcessado.split("/").reverse().join("-");
-
-  return {
-    ...numbers,
-    lastQuoteDate,
-    lastBalance,
-    type: infos.ResumenData.Tipo,
-    sector: infos.ResumenData.Setor,
-    subsector: infos.ResumenData.Subsetor
-  }
-}
-
-function _oscillationFormater(infos) {
-  return {
-    "2018": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2018"]),
-    "2019": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2019"]),
-    "2020": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2020"]),
-    "2021": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2021"]),
-    "2022": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2022"]),
-    "2023": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2023"]),
-    today: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas.Dia),
-    mounth: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas.Ms),
-    thirtyDays: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["30Dias"])
   }
 }
