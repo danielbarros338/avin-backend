@@ -8,14 +8,14 @@ export async function getInfo(req, res) {
 
   //TO DO: Logica para retornar os dados completos se existir dados salvos hoje
 
-  if (haveSavedData.status === 200) {
-    res
-      .status(haveSavedData.status)
-      .json(haveSavedData.message)
-      .end();
+  // if (haveSavedData.status === 200) {
+  //   res
+  //     .status(haveSavedData.status)
+  //     .json(haveSavedData.message)
+  //     .end();
     
-    return;
-  }
+  //   return;
+  // }
 
   let html;
   try {
@@ -35,7 +35,7 @@ export async function getInfo(req, res) {
   _dataProcessing($, tables, infos);
   const saveStatus = await _saveData(infos);
 
-  res.json({ infos });
+  res.json({ saveStatus });
 }
 
 function _dataProcessing($, tables, infos) {
@@ -170,7 +170,7 @@ async function _saveData(infos) {
   try {
     stock = await Models.Stocks.create({
       code: infos.ResumenData.Papel,
-      company: infos.ResumenData.Empresaa
+      company: infos.ResumenData.Empresa
     });
   } catch (err) {
     return {
@@ -204,6 +204,48 @@ async function _saveData(infos) {
     return {
       err: 400,
       message: `ERR: SAVE OSCILLATION ON DATABASE - ${err.message}`
+    }
+  }
+
+  try {
+    const fundamentalDataParams = formater.fundamentalDataFormater(infos);
+
+    await Models.Oscillations.create({
+      ...fundamentalDataParams,
+      companyId: stock.id
+    })
+  } catch (err) {
+    return {
+      err: 400,
+      message: `ERR: SAVE FUNDAMENTAL DATA ON DATABASE - ${err.message}`
+    }
+  }
+
+  try {
+    const incomeStatementParams = formater.incomeStatementFormater(infos);
+
+    await Models.IncomeStatementData.create({
+      ...incomeStatementParams,
+      companyId: stock.id
+    })
+  } catch (err) {
+    return {
+      err: 400,
+      message: `ERR: SAVE INCOME STATEMENT ON DATABASE - ${err.message}`
+    }
+  }
+
+  try {
+    const sheetBalanceParams = formater.sheetBalanceFormater(infos);
+
+    await Models.IncomeStatementData.create({
+      ...sheetBalanceParams,
+      companyId: stock.id
+    })
+  } catch (err) {
+    return {
+      err: 400,
+      message: `ERR: SAVE SHEET BALANCE ON DATABASE - ${err.message}`
     }
   }
 
