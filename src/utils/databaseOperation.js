@@ -20,7 +20,7 @@ export async function saveData(infos) {
 
     await Models.BasicInfo.create({
       ...basicInfoParams,
-      companyId: stock.id
+      StockId: stock.id
     });
   } catch (err) {
     return {
@@ -34,7 +34,7 @@ export async function saveData(infos) {
 
     await Models.Oscillations.create({
       ...oscillationParams,
-      companyId: stock.id
+      StockId: stock.id
     })
   } catch (err) {
     return {
@@ -48,7 +48,7 @@ export async function saveData(infos) {
 
     await Models.FundamentalData.create({
       ...fundamentalDataParams,
-      companyId: stock.id
+      StockId: stock.id
     })
   } catch (err) {
     return {
@@ -62,7 +62,7 @@ export async function saveData(infos) {
 
     await Models.IncomeStatementData.create({
       ...incomeStatementParams,
-      companyId: stock.id
+      StockId: stock.id
     })
   } catch (err) {
     return {
@@ -76,7 +76,7 @@ export async function saveData(infos) {
 
     await Models.SheetBalance.create({
       ...sheetBalanceParams,
-      companyId: stock.id
+      StockId: stock.id
     })
   } catch (err) {
     return {
@@ -84,6 +84,8 @@ export async function saveData(infos) {
       message: `ERR: SAVE SHEET BALANCE ON DATABASE - ${err.message}`
     }
   }
+
+  
 
   return {
     status: 200,
@@ -178,7 +180,16 @@ export function dataProcessing($, tables, infos) {
 export async function verifyData(req) {
   let dbData;
   try {
-    dbData = await Models.Stocks.findAll({ where: { code: req.params.id } });
+    dbData = await Models.Stocks.findAll({
+      where: { code: req.params.id },
+      include: [
+        { model: Models.FundamentalData },
+        { model: Models.IncomeStatementData },
+        { model: Models.Oscillations },
+        { model: Models.SheetBalance },
+        { model: Models.BasicInfo },
+      ]
+    });
   } catch (err) {
     return {
       status: 400,
@@ -192,7 +203,7 @@ export async function verifyData(req) {
       message: 'DATA NOT FOUND'
     };
 
-  let haveTodayData;
+  let stock;
   if (dbData.length > 1) {
     const today = new Date();
 
@@ -200,7 +211,7 @@ export async function verifyData(req) {
       const stockData = new Date(data.createdAt);
       
       if (stockData.toLocaleDateString() === today.toLocaleDateString()) {
-        haveTodayData = stockData;
+        stock = data;
         break;
       }
     }
@@ -208,11 +219,11 @@ export async function verifyData(req) {
     const today = new Date();
 
     if (dbData[0].createdAt.toLocaleDateString() === today.toLocaleDateString()) {
-      haveTodayData = dbData[0];
+      stock = dbData[0];
     }
   }
 
-  if (!haveTodayData) 
+  if (!stock) 
     return {
       status: 204,
       message: "NO DATA TODAY"
@@ -220,6 +231,32 @@ export async function verifyData(req) {
   
   return {
     status: 200,
-    message: haveTodayData
+    message: { stock: stock }
   };
+}
+
+export async function getSavedData(id) {
+  let stock;
+  try {
+    stock = await Models.Stocks.findAll({
+      where: { id },
+      include: [
+        { model: Models.FundamentalData },
+        { model: Models.IncomeStatementData },
+        { model: Models.Oscillations },
+        { model: Models.SheetBalance },
+        { model: Models.BasicInfo },
+      ]
+    });
+  } catch (err) {
+    return {
+      status: 400,
+      message: `ERR: SEARCH A STOCK ON DATABASE: ${err.message}`
+    };
+  }
+
+  return {
+    status: 200,
+    message: { stock }
+  }
 }

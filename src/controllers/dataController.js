@@ -1,16 +1,17 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import * as databaseOperations from "../utils/databaseOperation.js";
+import { stockJSONFormater } from "../utils/formaters.js";
 
 export async function getInfo(req, res) {
-  const haveSavedData = await databaseOperations.verifyData(req);
+  let stock = await databaseOperations.verifyData(req);
 
-  //TO DO: Logica para retornar os dados completos se existir dados salvos hoje
+  if (stock.status === 200) {
+    const data = stockJSONFormater(stock.message.stock);
 
-  if (haveSavedData.status === 200) {
     res
-      .status(haveSavedData.status)
-      .json(haveSavedData.message)
+      .status(stock.status)
+      .json(data)
       .end();
     
     return;
@@ -33,6 +34,8 @@ export async function getInfo(req, res) {
 
   databaseOperations.dataProcessing($, tables, infos);
   const saveStatus = await databaseOperations.saveData(infos);
+  stock = await databaseOperations.getSavedData(saveStatus.message.stockId);
+  stock = stockJSONFormater(stock.message.stock[0]);
 
-  res.json({ saveStatus });
+  res.json({ stock });
 }

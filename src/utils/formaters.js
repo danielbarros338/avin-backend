@@ -138,3 +138,79 @@ export function fundamentalDataFormater(info) {
 
   return params;
 }
+
+export function stockJSONFormater(stock) {
+  // return stock;
+  return {
+    BasicInfo: {
+      code: stock.code,
+      company: stock.company,
+      price: stock.BasicInfos[0].price,
+      type: stock.BasicInfos[0].type,
+      lastQuoteDate: stock.BasicInfos[0].lastQuoteDate,
+      lowestQuoteTwelveMonths: stock.BasicInfos[0].lowestQuoteTwelveMonths,
+      sector: stock.BasicInfos[0].sector,
+      higherQuoteTwelveMonths: stock.BasicInfos[0].higherQuoteTwelveMonths,
+      subsector: stock.BasicInfos[0].subsector,
+      averangeTradingVolumeTwoMonths: stock.BasicInfos[0].averangeTradingVolumeTwoMonths,
+      marketValue: stock.BasicInfos[0].marketValue,
+      lastBalance: stock.BasicInfos[0].lastBalance,
+      firmValue: stock.BasicInfos[0].firmValue,
+      numberOfActions: stock.BasicInfos[0].numberOfActions,
+      createdAt: stock.BasicInfos[0].createdAt,
+      updatedAt: stock.BasicInfos[0].updatedAt
+    },
+    FundamentalData: {
+      P_L: stock.FundamentalData[0].P_L,
+      LPA: stock.FundamentalData[0].LPA,
+      P_VP: stock.FundamentalData[0].P_VP,
+      VPA: stock.FundamentalData[0].VPA,
+      P_EBIT: stock.FundamentalData[0].P_EBIT,
+      grossMargin: stock.FundamentalData[0].grossMargin,
+      PSR: stock.FundamentalData[0].PSR,
+      grossEBIT: stock.FundamentalData[0].grossEBIT,
+      P_ASSETS: stock.FundamentalData[0].P_ASSETS,
+      netMargin: stock.FundamentalData[0].netMargin,
+      P_workingCapital: stock.FundamentalData[0].P_workingCapital,
+      EBIT_assets: stock.FundamentalData[0].EBIT_assets,
+      P_netCircularAsset: stock.FundamentalData[0].P_netCircularAsset,
+      ROIC: stock.FundamentalData[0].ROIC,
+      dividendYeld: stock.FundamentalData[0].dividendYeld,
+      ROE: stock.FundamentalData[0].ROE,
+      EV_EBITDA: stock.FundamentalData[0].EV_EBITDA,
+      currentLiq: stock.FundamentalData[0].currentLiq,
+      EV_EBIT: stock.FundamentalData[0].EV_EBIT,
+      grossDebit_patrimony: stock.FundamentalData[0].grossDebit_patrimony,
+      netRevenueGrow: stock.FundamentalData[0].netRevenueGrow,
+      assetTurnover: stock.FundamentalData[0].assetTurnover,
+    },
+    IncomeStatementData: {
+      resultFinancialIntermediation: stock.IncomeStatementData[0].resultFinancialIntermediation,
+      serviceRevenue: stock.IncomeStatementData[0].serviceRevenue,
+      netProfit: stock.IncomeStatementData[0].netProfit,
+      netRevenue: stock.IncomeStatementData[0].netRevenue,
+      EBIT: stock.IncomeStatementData[0].EBIT,
+    },
+    Oscillations: {
+      "2018": stock.Oscillations[0]["2018"],
+      "2019": stock.Oscillations[0]["2019"],
+      "2020": stock.Oscillations[0]["2020"],
+      "2021": stock.Oscillations[0]["2021"],
+      "2022": stock.Oscillations[0]["2022"],
+      "2023": stock.Oscillations[0]["2023"],
+      today: stock.Oscillations[0].today,
+      mounth: stock.Oscillations[0].month,
+      thirtyDays: stock.Oscillations[0].thirtyDays,
+    },
+    SheetBalances: {
+      active: stock.SheetBalances[0].active,
+      deposit: stock.SheetBalances[0].deposit,
+      creditCard: stock.SheetBalances[0].creditCard,
+      netWorth: stock.SheetBalances[0].netWorth,
+      currentAssets: stock.SheetBalances[0].currentAssets,
+      disponibilities: stock.SheetBalances[0].disponibilities,
+      grossDebit: stock.SheetBalances[0].grossDebit,
+      netDebit: stock.SheetBalances[0].netDebit,
+    }
+  }
+}

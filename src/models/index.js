@@ -5,31 +5,24 @@ import SheetBalance from "./SheetBalance.js";
 import IncomeStatementData from "./IncomeStatementData.js";
 import FundamentalData from "./FundamentalData.js";
 
-BasicInfo.belongsTo(Stocks, {
-  foreignKey: "companyId"
-});
+Stocks.hasMany(BasicInfo);
+Stocks.hasMany(Oscillations);
+Stocks.hasMany(SheetBalance);
+Stocks.hasMany(IncomeStatementData);
+Stocks.hasMany(FundamentalData);
 
-Oscillations.belongsTo(Stocks, {
-  foreignKey: "companyId"
-});
+// Stocks.sync({ force: true });
 
-SheetBalance.belongsTo(Stocks, {
-  foreignKey: "companyId"
-});
+BasicInfo.belongsTo(Stocks);
+Oscillations.belongsTo(Stocks);
+SheetBalance.belongsTo(Stocks);
+IncomeStatementData.belongsTo(Stocks);
+FundamentalData.belongsTo(Stocks);
 
-IncomeStatementData.belongsTo(Stocks, {
-  foreignKey: "companyId"
-});
-
-FundamentalData.belongsTo(Stocks, {
-  foreignKey: "companyId"
-});
-
-// Stocks.sync();
 // BasicInfo.sync({ force: true });
-// Oscillations.sync();
+// Oscillations.sync({ force: true });
 // SheetBalance.sync({ force: true });
 // IncomeStatementData.sync({ force: true });
-// FundamentalData.sync();
+// FundamentalData.sync({ force: true });
 
 export { Stocks, BasicInfo, Oscillations, SheetBalance, IncomeStatementData, FundamentalData };
