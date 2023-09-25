@@ -8,14 +8,14 @@ export async function getInfo(req, res) {
 
   //TO DO: Logica para retornar os dados completos se existir dados salvos hoje
 
-  // if (haveSavedData.status === 200) {
-  //   res
-  //     .status(haveSavedData.status)
-  //     .json(haveSavedData.message)
-  //     .end();
+  if (haveSavedData.status === 200) {
+    res
+      .status(haveSavedData.status)
+      .json(haveSavedData.message)
+      .end();
     
-  //   return;
-  // }
+    return;
+  }
 
   let html;
   try {
@@ -150,6 +150,12 @@ async function _verifyData(req) {
         haveTodayData = stockData;
         break;
       }
+    }
+  } else {
+    const today = new Date();
+
+    if (dbData[0].createdAt.toLocaleDateString() === today.toLocaleDateString()) {
+      haveTodayData = dbData[0];
     }
   }
 
