@@ -210,7 +210,7 @@ async function _saveData(infos) {
   try {
     const fundamentalDataParams = formater.fundamentalDataFormater(infos);
 
-    await Models.Oscillations.create({
+    await Models.FundamentalData.create({
       ...fundamentalDataParams,
       companyId: stock.id
     })
@@ -238,7 +238,7 @@ async function _saveData(infos) {
   try {
     const sheetBalanceParams = formater.sheetBalanceFormater(infos);
 
-    await Models.IncomeStatementData.create({
+    await Models.SheetBalance.create({
       ...sheetBalanceParams,
       companyId: stock.id
     })

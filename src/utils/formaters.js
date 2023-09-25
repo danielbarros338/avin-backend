@@ -1,14 +1,14 @@
 export function oscillationFormater(infos) {
   return {
-    "2018": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2018"]),
-    "2019": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2019"]),
-    "2020": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2020"]),
-    "2021": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2021"]),
-    "2022": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2022"]),
-    "2023": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2023"]),
-    today: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas.Dia),
-    mounth: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas.Ms),
-    thirtyDays: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["30Dias"])
+    "2018": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2018"].replaceAll(".", "").replace(",",".")),
+    "2019": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2019"].replaceAll(".", "").replace(",",".")),
+    "2020": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2020"].replaceAll(".", "").replace(",",".")),
+    "2021": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2021"].replaceAll(".", "").replace(",",".")),
+    "2022": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2022"].replaceAll(".", "").replace(",",".")),
+    "2023": parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["2023"].replaceAll(".", "").replace(",",".")),
+    today: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas.Dia.replaceAll(".", "").replace(",",".")),
+    mounth: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas.Ms.replaceAll(".", "").replace(",",".")),
+    thirtyDays: parseFloat(infos.Oscilacoes_IndicadoresFundamentalistas["30Dias"].replaceAll(".", "").replace(",","."))
   }
 }
 
