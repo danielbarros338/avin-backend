@@ -28,8 +28,8 @@ FundamentalData.belongsTo(Stocks, {
 // Stocks.sync();
 // BasicInfo.sync({ force: true });
 // Oscillations.sync();
-// SheetBalance.sync();
-// IncomeStatementData.sync();
+// SheetBalance.sync({ force: true });
+// IncomeStatementData.sync({ force: true });
 // FundamentalData.sync();
 
 export { Stocks, BasicInfo, Oscillations, SheetBalance, IncomeStatementData, FundamentalData };

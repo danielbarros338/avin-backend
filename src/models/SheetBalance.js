@@ -21,6 +21,18 @@ SheetBalances.init({
   },
   netWorth: {
     type: DataTypes.DOUBLE,
+  },
+  currentAssets: {
+    type: DataTypes.DOUBLE
+  },
+  disponibilities: {
+    type: DataTypes.DOUBLE
+  },
+  grossDebit: {
+    type: DataTypes.DOUBLE
+  },
+  netDebit: {
+    type: DataTypes.DOUBLE
   }
 }, {
   sequelize,

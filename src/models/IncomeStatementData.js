@@ -18,6 +18,12 @@ IncomeStatementData.init({
   },
   netProfit: {
     type: DataTypes.DOUBLE
+  },
+  netRevenue: {
+    type: DataTypes.DOUBLE
+  },
+  EBIT: {
+    type: DataTypes.DOUBLE
   }
 }, {
   sequelize,

@@ -41,19 +41,55 @@ export function basicInfoFormater(infos) {
 }
 
 export function incomeStatementFormater(info) {
-  return {
-    resultFinancialIntermediation: parseFloat(info.DadosDemonstrativosDeResultados.ResultIntFinanc.replaceAll(".", "").replace(",",".")),
-    serviceRevenue: parseFloat(info.DadosDemonstrativosDeResultados.RecServios.replaceAll(".", "").replace(",",".")),
-    netProfit: parseFloat(info.DadosDemonstrativosDeResultados.LucroLquido.replaceAll(".", "").replace(",","."))
+  const keys = Object.keys(info.DadosDemonstrativosDeResultados);
+  const expectedKeys = ["ResultIntFinanc", "RecServios", "LucroLquido", "ResultIntFinanc", "ReceitaLquida", "EBIT"];
+  const intermediateParams = {}
+
+  for (const expectedKey of expectedKeys) {
+    for (const key of keys) {
+      if (key === expectedKey) {
+        intermediateParams[key] = parseFloat(info.DadosDemonstrativosDeResultados[key].replaceAll(".", "").replace(",","."));
+      } else if (!intermediateParams[expectedKey]) {
+        intermediateParams[expectedKey] = null;
+      }
+    }
   }
+
+  const params = {
+    resultFinancialIntermediation: intermediateParams.ResultIntFinanc,
+    serviceRevenue: intermediateParams.RecServios,
+    netProfit: intermediateParams.LucroLquido,
+    netRevenue: intermediateParams.ReceitaLquida,
+    EBIT: intermediateParams.EBIT
+  }
+
+  return params;
 }
 
 export function sheetBalanceFormater(info) {
+  const keys = Object.keys(info.DadosBalancoPatrimonial);
+  const expectedKeys = ["Ativo", "Depsitos", "CartDeCrdito", "PatrimLq", "AtivoCirculante", "Disponibilidades", "DvBruta", "DvLquida"];
+  const intermediateParams = {}
+
+  for (const expectedKey of expectedKeys) {
+    for (const key of keys) {
+      if (key === expectedKey) {
+        intermediateParams[key] = parseFloat(info.DadosBalancoPatrimonial[key].replaceAll(".", "").replace(",","."));
+      } else if (!intermediateParams[expectedKey]) {
+        intermediateParams[expectedKey] = null;
+      }
+    }
+  }
+
   return {
-    active: parseFloat(info.DadosBalancoPatrimonial.Ativo.replaceAll(".", "").replace(",",".")),
-    deposit: parseFloat(info.DadosBalancoPatrimonial.Depsitos.replaceAll(".", "").replace(",",".")),
-    creditCard: parseFloat(info.DadosBalancoPatrimonial.CartDeCrdito.replaceAll(".", "").replace(",",".")),
-    netWorth: parseFloat(info.DadosBalancoPatrimonial.PatrimLq.replaceAll(".", "").replace(",","."))
+    active: intermediateParams.Ativo,
+    deposit: intermediateParams.Depsitos,
+    creditCard: intermediateParams.CartDeCrdito,
+    netWorth: intermediateParams.PatrimLq,
+    currentAssets: intermediateParams.AtivoCirculante,
+    disponibilities: intermediateParams.Disponibilidades,
+    grossDebit: intermediateParams.DvBruta,
+    netDebit: intermediateParams.DvLquida
   }
 }
 
