@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  avin-backend:
+    build: "./"
+    container_name: "avin-backend"
+    restart: always
+    ports:
+      - "3345:3345"
+    environment:
+      - URL=${URL}
+      - PORT=${PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DIALECT=${DB_DIALECT}

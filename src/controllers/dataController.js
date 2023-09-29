@@ -35,6 +35,7 @@ export async function getInfo(req, res) {
   databaseOperations.dataProcessing($, tables, infos);
   const saveStatus = await databaseOperations.saveData(infos);
   stock = await databaseOperations.getSavedData(saveStatus.message.stockId);
+  console.log(stock)
   stock = stockJSONFormater(stock.message.stock[0]);
 
   res.json({ stock });
