@@ -19,12 +19,11 @@ class FundamentalData {
       response = await fetch(url, {
         method: "get",
       });
-
-      response = await response.text();
     } catch (err) {
       console.error(`Error on call listStocks: ${err}`);
     }
 
+    response = await response.text();
     response = response.split("\r\n");
 
     const keys = response[0].split(",");

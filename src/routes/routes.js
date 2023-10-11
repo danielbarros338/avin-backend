@@ -1,5 +1,5 @@
-import * as fundamentalData from "./../controllers/fundamentalData.js";
+import * as stockController from "../controllers/stockController.js";
 
 export default (app) => {
-  app.get("/list-stocks", fundamentalData.listStock);
+  app.get("/list-stocks", stockController.listStock);
 };
