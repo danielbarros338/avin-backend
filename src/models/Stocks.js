@@ -22,6 +22,8 @@ class FundamentalData {
   }
 
   #formatResponse(response) {
+    response = response.split("\r\n");
+
     const keys = response[0].split(",");
     const stockList = [];
 
@@ -42,11 +44,25 @@ class FundamentalData {
     return stockList;
   }
 
-  async listStocks() {
+  async listStocks(date = null, state = null) {
     let response;
-    const url = `${this.#URL}function=${this.#apiFunction}&apikey=${
-      this.#API_KEY
-    }`;
+    let url;
+
+    if (date && state) {
+      url = `${this.#URL}function=${
+        this.#apiFunction
+      }&date=${date}&state=${state}&apikey=${this.#API_KEY}`;
+    } else if (date) {
+      url = `${this.#URL}function=${this.#apiFunction}&date=${date}&apikey=${
+        this.#API_KEY
+      }`;
+    } else if (state) {
+      url = `${this.#URL}function=${this.#apiFunction}&state=${date}&apikey=${
+        this.#API_KEY
+      }`;
+    } else {
+      url = `${this.#URL}function=${this.#apiFunction}&apikey=${this.#API_KEY}`;
+    }
 
     try {
       response = await fetch(url, {
@@ -57,7 +73,6 @@ class FundamentalData {
     }
 
     response = await response.text();
-    response = response.split("\r\n");
 
     const stockList = this.#formatResponse(response);
 
