@@ -9,23 +9,19 @@ class FundamentalData {
     this.#apiFunction = apiFunction;
   }
 
-  async listStocks() {
-    let response;
-    const url = `${this.#URL}function=${this.#apiFunction}&apikey=${
-      this.#API_KEY
-    }`;
+  get getURL() {
+    return this.#URL;
+  }
 
-    try {
-      response = await fetch(url, {
-        method: "get",
-      });
-    } catch (err) {
-      console.error(`Error on call listStocks: ${err}`);
-    }
+  get getApiKey() {
+    return this.#API_KEY;
+  }
 
-    response = await response.text();
-    response = response.split("\r\n");
+  get getApiFunction() {
+    return this.#apiFunction;
+  }
 
+  #formatResponse(response) {
     const keys = response[0].split(",");
     const stockList = [];
 
@@ -42,6 +38,28 @@ class FundamentalData {
 
       stockList.push(stock);
     }
+
+    return stockList;
+  }
+
+  async listStocks() {
+    let response;
+    const url = `${this.#URL}function=${this.#apiFunction}&apikey=${
+      this.#API_KEY
+    }`;
+
+    try {
+      response = await fetch(url, {
+        method: "get",
+      });
+    } catch (err) {
+      console.error(`Error on fetch listStocks: ${err}`);
+    }
+
+    response = await response.text();
+    response = response.split("\r\n");
+
+    const stockList = this.#formatResponse(response);
 
     return stockList;
   }
