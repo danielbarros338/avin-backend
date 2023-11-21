@@ -25,3 +25,16 @@ export async function companyOverview(req, res) {
 
   res.status(200).json({ companyOverview });
 }
+
+export async function timeSeriesDaily(req, res) {
+  const fundamentalData = new FundamentalData(
+    process.env.URL,
+    process.env.API_KEY,
+    "TIME_SERIES_DAILY",
+    req.body.symbol
+  );
+
+  const timeSeriesDaily = await fundamentalData.timeSeriesDaily(req.body.outputSize, req.body.dataType);
+
+  res.status(200).json({ timeSeriesDaily });
+}
