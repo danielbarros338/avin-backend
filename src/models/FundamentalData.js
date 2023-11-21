@@ -1,4 +1,5 @@
 import Stocks from "./Stocks.js";
+
 class FundamentalData extends Stocks {
   #symbol;
 
@@ -10,9 +11,9 @@ class FundamentalData extends Stocks {
 
   async companyOverview() {
     let response;
-    const url = `${this.getURL()}function=${this.getApiFunction()}&symbol=${
+    const url = `${this.getURL}function=${this.getApiFunction}&symbol=${
       this.#symbol
-    }&apikey=${this.getApiKey()}`;
+    }&apikey=${this.getApiKey}`;
 
     try {
       response = await fetch(url, { method: "get" });
@@ -20,6 +21,12 @@ class FundamentalData extends Stocks {
       console.error(`Error on fetch companyOverview: ${err}`);
     }
 
-    return await response.json();
+    response = await response.text();
+
+    const companyOverview = JSON.parse(response);
+
+    return companyOverview;
   }
 }
+
+export default FundamentalData;
