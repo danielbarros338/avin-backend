@@ -5,4 +5,7 @@ export default (app) => {
 
   app.post("/company-overview", stockController.companyOverview);
   app.post("/time-series-daily", stockController.timeSeriesDaily);
+
+  // ML Data
+  app.post("/time-series-daily-ml", stockController.timeSeriesDailyML);
 };

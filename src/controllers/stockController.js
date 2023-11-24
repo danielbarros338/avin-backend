@@ -38,3 +38,23 @@ export async function timeSeriesDaily(req, res) {
 
   res.status(200).json({ timeSeriesDaily });
 }
+
+export async function timeSeriesDailyML(req, res) {
+  const symbols = req.body.symbols;
+  const timeSeriesDailyArr = []
+
+  for (const symbol of symbols) {
+    const fundamentalData = new FundamentalData(
+      process.env.URL,
+      process.env.API_KEY,
+      "TIME_SERIES_DAILY",
+      symbol
+    );
+  
+    const timeSeriesDaily = await fundamentalData.timeSeriesDaily(req.body.outputSize, req.body.dataType);
+    timeSeriesDailyArr.push(timeSeriesDaily);
+  }
+  
+
+  res.status(200).json({ timeSeriesDailyArr });
+}
